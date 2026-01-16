@@ -33,14 +33,12 @@ type Complex struct {
 	}
 
 	// Run
-	args := []string{inputFile}
-	suffix := ".gen.go"
-	if err := Run(args, suffix); err != nil {
+	outputFile := filepath.Join(dir, "input.gen.go")
+	if err := Run(inputFile, outputFile); err != nil {
 		t.Fatalf("Run failed: %v", err)
 	}
 
 	// Verify
-	outputFile := filepath.Join(dir, "input.gen.go")
 	content, err := os.ReadFile(outputFile)
 	if err != nil {
 		t.Fatalf("failed to read output file: %v", err)

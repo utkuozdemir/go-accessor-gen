@@ -9,12 +9,12 @@ It only works on fields that are pointers (like `*string` or `*int`).
 Run it on your Go file:
 
 ```bash
-go run main.go --source input.go
+go run main.go --source input.go --output input.gen.go
 ```
 
-This makes a new file named `input.generated.go`.
+This makes a new file named `input.gen.go`.
 
 ## Options
 
-- `--source`: The file to read (required). You can use this flag many times.
-- `--suffix`: The ending of the new file. Default is `.generated.go`.
+- `--source`: The file to read (required).
+- `--output`: The file to write (required).

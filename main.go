@@ -10,39 +10,34 @@ import (
 	"go/token"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
 )
 
 func main() {
-	var sources []string
-	flag.Func("source", "Go source file(s) to process", func(s string) error {
-		sources = append(sources, s)
-		return nil
-	})
-	suffix := flag.String("suffix", ".generated.go", "Suffix for generated files")
+	source := flag.String("source", "", "Go source file to process")
+	output := flag.String("output", "", "Output generated file")
 	flag.Parse()
 
-	if err := Run(sources, *suffix); err != nil {
+	if err := Run(*source, *output); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func Run(sources []string, suffix string) error {
-	if len(sources) == 0 {
-		return fmt.Errorf("no sources provided, use --source flag")
+func Run(source string, output string) error {
+	if source == "" {
+		return fmt.Errorf("no source provided, use --source flag")
+	}
+	if output == "" {
+		return fmt.Errorf("no output provided, use --output flag")
 	}
 
-	for _, source := range sources {
-		if err := processFile(source, suffix); err != nil {
-			return fmt.Errorf("failed to process file %s: %w", source, err)
-		}
+	if err := processFile(source, output); err != nil {
+		return fmt.Errorf("failed to process file %s: %w", source, err)
 	}
 
 	return nil
 }
 
-func processFile(filename string, suffix string) error {
+func processFile(filename string, outputFilename string) error {
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
 	if err != nil {
@@ -170,11 +165,8 @@ func processFile(filename string, suffix string) error {
 	}
 
 	// Write to file
-	originalExt := filepath.Ext(filename)
-	base := strings.TrimSuffix(filename, originalExt)
-	outFilename := base + suffix
-	if err := os.WriteFile(outFilename, buf.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write file %s: %w", outFilename, err)
+	if err := os.WriteFile(outputFilename, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write file %s: %w", outputFilename, err)
 	}
 
 	return nil
