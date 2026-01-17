@@ -164,8 +164,11 @@ func processFile(filename string, outputFilename string) error {
 		}
 	}
 
+	data := bytes.TrimSpace(buf.Bytes())
+	data = append(data, '\n')
+
 	// Write to file
-	if err := os.WriteFile(outputFilename, buf.Bytes(), 0644); err != nil {
+	if err := os.WriteFile(outputFilename, data, 0644); err != nil {
 		return fmt.Errorf("failed to write file %s: %w", outputFilename, err)
 	}
 
